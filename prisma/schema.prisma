@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @id @default(uuid())
+  email String @unique
+  password String
+  role userRole
+  needPasswordChange Boolean @default(true)
+  status userStatus @default(ACTIVE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  admin Admin?
+  doctor Doctor?
+  @@map("users")
+}
+enum userRole {
+  SUPER_ADMIN
+  ADMIN
+  DOCTOR
+  PATIENT
+}
+
+enum userStatus {
+ ACTIVE 
+ BLOCKED
+ DELETED
+}
+
+model Admin {
+  id String @id @default(uuid())
+  name String
+  email String @unique
+  profilePhoto String?
+  contactNumber String
+  isDeleted Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user User @relation(fields: [email], references: [email])
+  @@map("admin")
+}
+
+model Doctor {
+  id String @id @default(uuid())
+  name String
+  email String @unique
+  profilePhoto String?
+  contactNumber String
+  address String?
+  registrationNumber String
+  experience Int @default(0)
+  gender Gender
+  appointmentFee Int
+  qualification String
+  currentWorkingPlace String
+  designation String
+  isDeleted Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user User @relation(fields: [email], references: [email])
+  @@map("doctor")
+}
+
+
+enum Gender {
+  MALE
+  FEMALE
+}
