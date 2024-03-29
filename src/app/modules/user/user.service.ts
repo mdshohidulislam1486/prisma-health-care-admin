@@ -68,8 +68,40 @@ const createDoctor = async (req: any) => {
 
   return result;
 };
+const createPatient = async (req: any) => {
+  let data = req.body;
+  const file: TUploadedFileInfo = req?.file;
+  console.log(req.body);
+  if (file) {
+    const uploadedFile = await uploadToCludionary(file);
+    data.patient.profilePhoto = uploadedFile?.secure_url;
+  }
+  const hashedPassword: string = await bcrypt.hash(
+    data.password,
+    Number(config.salt_round) as number
+  );
+
+  const userData = {
+    email: data.patient.email,
+    password: hashedPassword,
+    role: userRole.PATIENT,
+  };
+
+  const result = await prisma.$transaction(async (transctionCleint) => {
+    const createdUserData = await transctionCleint.user.create({
+      data: userData,
+    });
+    const createPatientData = await transctionCleint.patient.create({
+      data: data.patient,
+    });
+    return createPatientData;
+  });
+
+  return result;
+};
 
 export const userService = {
   createAdmin,
   createDoctor,
+  createPatient,
 };
