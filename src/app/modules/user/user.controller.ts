@@ -1,8 +1,11 @@
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, RequestHandler, Response } from 'express';
 import { userService } from './user.service';
 import * as bcrypt from 'bcrypt';
 import { sendResponse } from '../../../helpers/send-response';
 import httpStatus from 'http-status';
+import { catchAsync } from '../../../shared/catchAsync';
+import { pick } from '../../../shared/pick';
+import { userFilterableFields } from './user.constant';
 
 const createAdmin = async (req: Request, res: Response, next: NextFunction) => {
   const result = await userService.createAdmin(req);
@@ -43,8 +46,34 @@ const createPatient = async (
   });
 };
 
+const getAllusers = catchAsync(async (req: Request, res: Response) => {
+  const fitlers = pick(req.query, userFilterableFields);
+  const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
+  const result = await userService.getAllUserFromDB(fitlers, options);
+  sendResponse(res, {
+    statsuCode: 200,
+    success: true,
+    message: 'Users retrieved Successfully ',
+    data: result.data,
+    meta: result.meta,
+  });
+});
+
+const changeProfileStatus = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await userService.changeUserProfileStatus(id, req.body);
+  sendResponse(res, {
+    statsuCode: httpStatus.OK,
+    success: true,
+    message: 'User Profile status changed',
+    data: result,
+  });
+};
+
 export const userController = {
   createAdmin,
   createPatient,
   createDoctor,
+  getAllusers,
+  changeProfileStatus,
 };

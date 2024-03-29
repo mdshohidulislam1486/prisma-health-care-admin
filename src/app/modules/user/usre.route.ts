@@ -10,6 +10,12 @@ import { json } from 'stream/consumers';
 const router = express.Router();
 
 router
+  .get('/', auth(userRole.ADMIN, userRole.ADMIN), userController.getAllusers)
+  .patch(
+    '/:id/status',
+    auth(userRole.SUPER_ADMIN, userRole.ADMIN),
+    userController.changeProfileStatus
+  )
   .post(
     '/create-admin',
     auth(userRole.ADMIN, userRole.SUPER_ADMIN),
