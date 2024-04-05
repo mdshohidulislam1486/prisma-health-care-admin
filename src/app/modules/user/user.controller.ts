@@ -6,6 +6,7 @@ import httpStatus from 'http-status';
 import { catchAsync } from '../../../shared/catchAsync';
 import { pick } from '../../../shared/pick';
 import { userFilterableFields } from './user.constant';
+import { TAuthUser } from '../../interfaces/common';
 
 const createAdmin = async (req: Request, res: Response, next: NextFunction) => {
   const result = await userService.createAdmin(req);
@@ -70,10 +71,41 @@ const changeProfileStatus = async (req: Request, res: Response) => {
   });
 };
 
+const getmyProfile = async (
+  req: Request & { user?: TAuthUser },
+  res: Response
+) => {
+  const user = req.user;
+
+  const result = await userService.getMyProfile(user as TAuthUser);
+  sendResponse(res, {
+    statsuCode: httpStatus.OK,
+    success: true,
+    message: 'Profile data found ',
+    data: result,
+  });
+};
+
+const updateMyProfile = async (
+  req: Request & { user?: TAuthUser },
+  res: Response,
+  next: NextFunction
+) => {
+  const user = req.user;
+  const result = await userService.updateMyProfile(user as TAuthUser, req);
+  sendResponse(res, {
+    statsuCode: httpStatus.OK,
+    success: true,
+    message: 'Profile data updated ',
+    data: result,
+  });
+};
 export const userController = {
   createAdmin,
   createPatient,
   createDoctor,
   getAllusers,
   changeProfileStatus,
+  getmyProfile,
+  updateMyProfile,
 };

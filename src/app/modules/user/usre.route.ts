@@ -10,6 +10,16 @@ import { json } from 'stream/consumers';
 const router = express.Router();
 
 router
+  .get(
+    '/me',
+    auth(
+      userRole.ADMIN,
+      userRole.DOCTOR,
+      userRole.SUPER_ADMIN,
+      userRole.PATIENT
+    ),
+    userController.getmyProfile
+  )
   .get('/', auth(userRole.ADMIN, userRole.ADMIN), userController.getAllusers)
   .patch(
     '/:id/status',
@@ -42,6 +52,20 @@ router
     (req: Request, res: Response, next: NextFunction) => {
       req.body = userValidation.createPatient.parse(JSON.parse(req.body.data));
       return userController.createPatient(req, res, next);
+    }
+  )
+  .post(
+    '/update-my-profile',
+    auth(
+      userRole.ADMIN,
+      userRole.DOCTOR,
+      userRole.SUPER_ADMIN,
+      userRole.PATIENT
+    ),
+    upload.single('file'),
+    (req: Request, res: Response, next: NextFunction) => {
+      req.body = JSON.parse(req.body.data);
+      return userController.updateMyProfile(req, res, next);
     }
   );
 
