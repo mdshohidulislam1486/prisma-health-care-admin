@@ -12,7 +12,28 @@ const createASpecility = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const getAllSepcilities = catchAsync(async (req: Request, res: Response) => {
+  const result = await specilitiesService.getAllSepcilities();
+  sendResponse(res, {
+    statsuCode: 200,
+    success: true,
+    message: 'Specilities retrived successfully ',
+    data: result,
+  });
+});
+const deleteSepecilities = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await specilitiesService.deleteSepecilities(id);
+  sendResponse(res, {
+    statsuCode: 200,
+    success: true,
+    message: 'Specilities deleted successfully ',
+    data: result,
+  });
+});
 
 export const specilitesController = {
   createASpecility,
+  getAllSepcilities,
+  deleteSepecilities,
 };
