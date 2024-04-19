@@ -2,6 +2,9 @@ import { NextFunction, Request, Response } from 'express';
 import { sendResponse } from '../../../helpers/send-response';
 import httpStatus from 'http-status';
 import { doctorService } from './doctor.service';
+import { TAuthUser } from '../../interfaces/common';
+import { pick } from '../../../shared/pick';
+import { doctorScheduleService } from '../doctor-schedule/doctor-schedule.service';
 
 const updateSingleDoctr = async (
   req: Request,

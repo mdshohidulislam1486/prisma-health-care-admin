@@ -4,10 +4,16 @@ import { auth } from '../../middlewares/auth';
 import { userRole } from '@prisma/client';
 
 const router = express.Router();
-router.post(
-  '/',
-  auth(userRole.DOCTOR),
-  doctorScheduleController.createDoctorSchedule
-);
+router
+  .get(
+    '/my-schedule',
+    auth(userRole.DOCTOR),
+    doctorScheduleController.getMySchedule
+  )
+  .post(
+    '/',
+    auth(userRole.DOCTOR),
+    doctorScheduleController.createDoctorSchedule
+  );
 
 export const DoctorScheduleRouter = router;

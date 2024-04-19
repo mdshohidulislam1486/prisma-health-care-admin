@@ -1,4 +1,8 @@
+import { Prisma } from '@prisma/client';
+import { calculagePagination } from '../../../helpers/pagination.helper';
 import { prisma } from '../../../shared/prisma';
+import { TAuthUser } from '../../interfaces/common';
+import { TPagination } from '../../interfaces/pagination';
 
 const updateSingleDoctr = async (id: string, paylod: any) => {
   const { specialties, ...doctorData } = paylod;
