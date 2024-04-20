@@ -10,6 +10,11 @@ router
     auth(userRole.DOCTOR),
     doctorScheduleController.getMySchedule
   )
+  .delete(
+    '/:id',
+    auth(userRole.DOCTOR),
+    doctorScheduleController.deleteDocSchedule
+  )
   .post(
     '/',
     auth(userRole.DOCTOR),

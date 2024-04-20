@@ -68,6 +68,7 @@ model Doctor {
   currentWorkingPlace String
   designation String
   doctorSchedule DoctorSchedule[]
+  appointmet Appointment[]
   isDeleted Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -88,6 +89,7 @@ model Patient { //delete second
   isDeleted Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  appointment  Appointment[]
   user User @relation(fields: [email], references: [email]) //delete last
   @@map("patient")
 }
@@ -152,6 +154,7 @@ model Schedule {
   doctorSchedule DoctorSchedule[]
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
+  appointment Appointment?
   @@map("schedule")
 }
 
@@ -161,9 +164,51 @@ model DoctorSchedule {
   isBooked Boolean @default(false)
   doctor Doctor @relation(fields: [doctorId], references: [id])
   schedule Schedule @relation(fields: [scheduleId], references: [id])
-  appointmentId String?
+  appointmentId String? @unique
+  appointment Appointment? @relation(fields: [appointmentId], references: [id])
   @@id([doctorId, scheduleId])
   @@map("doctor_schedule")
+}
+model Appointment {
+  id String @id @default(uuid())
+  patientId String
+  patient Patient @relation(fields: [patientId], references: [id])
+  doctorId String
+  doctor Doctor @relation(fields: [doctorId], references: [id])
+  scheduleId String @unique
+  schedule Schedule @relation(fields: [scheduleId], references: [id])
+  payment Payment?
+  videoCallingId String
+  status AppointmentStatus @default(SCHEDULED)
+  paymentStatus PaymentStatus @default(UNPAID)
+  doctorSchedule DoctorSchedule?
+  createdAt  DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  @@map("appointment")
+}
+
+model Payment {
+  id String @id @default(uuid())
+  appointtmentId String @unique
+  appointment Appointment @relation(fields: [appointtmentId], references: [id])
+  amount Float
+  transactionId String
+  status PaymentStatus @default(UNPAID)
+  paymentGatewayData Json?
+  createdAt  DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  @@map("payment")
+}
+
+enum PaymentStatus {
+  PAID
+  UNPAID
+}
+enum AppointmentStatus {
+  SCHEDULED
+  INPROGRESS
+  COMPLETED
+  CANCELED 
 }
 enum Gender {
   MALE

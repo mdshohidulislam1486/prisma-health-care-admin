@@ -9,12 +9,15 @@ import ApiError from '../../errors/apiError';
 import httpStatus from 'http-status';
 
 const loginUser = async (paylod: { email: string; password: string }) => {
+  console.log({ paylod });
   const userData = await prisma.user.findUniqueOrThrow({
     where: {
       email: paylod.email,
       status: userStatus.ACTIVE,
     },
   });
+
+  console.log({ userData });
   const isCorrectPassword: boolean = await bcrypt.compare(
     paylod.password,
     userData.password
@@ -161,9 +164,9 @@ const resetPassword = async (
     where: {
       email: userData.email,
     },
-    data:{
-      password:hashPassword
-    }
+    data: {
+      password: hashPassword,
+    },
   });
 };
 export const authServices = {

@@ -49,7 +49,12 @@ const deleteDocSchedule = async (
   req: Request & { user?: TAuthUser },
   res: Response
 ) => {
-  const result = await doctorScheduleService.deleteDocSchedule();
+  const user = req.user;
+  const { id } = req.params;
+  const result = await doctorScheduleService.deleteDocSchedule(
+    user as TAuthUser,
+    id
+  );
   sendResponse(res, {
     statsuCode: httpStatus.OK,
     success: true,

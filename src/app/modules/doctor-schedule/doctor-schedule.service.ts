@@ -3,6 +3,8 @@ import { prisma } from '../../../shared/prisma';
 import { TAuthUser } from '../../interfaces/common';
 import { TPagination } from '../../interfaces/pagination';
 import { calculagePagination } from '../../../helpers/pagination.helper';
+import ApiError from '../../errors/apiError';
+import httpStatus from 'http-status';
 
 const createDoctorSchedule = async (
   user: TAuthUser,
@@ -96,7 +98,43 @@ const getMySchedule = async (
     data: result,
   };
 };
-const deleteDocSchedule = async () => {};
+const deleteDocSchedule = async (user: TAuthUser, scheduleId: string) => {
+  const doctorData = await prisma.doctor.findFirstOrThrow({
+    where: {
+      email: user?.email,
+    },
+  });
+
+  console.log({ doctorData, scheduleId });
+
+  const isBooked = await prisma.doctorSchedule.findUnique({
+    where: {
+      doctorId_scheduleId: {
+        doctorId: doctorData.id,
+        scheduleId: scheduleId,
+      },
+      isBooked: true,
+    },
+  });
+
+  if (isBooked) {
+    throw new ApiError(
+      httpStatus.FORBIDDEN,
+      'You can not delete as this schedule is already booked '
+    );
+  }
+
+  const result = await prisma.doctorSchedule.delete({
+    where: {
+      doctorId_scheduleId: {
+        doctorId: doctorData.id,
+        scheduleId: scheduleId,
+      },
+    },
+  });
+
+  return result;
+};
 export const doctorScheduleService = {
   createDoctorSchedule,
   getMySchedule,
