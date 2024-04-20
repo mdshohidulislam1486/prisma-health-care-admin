@@ -57,7 +57,7 @@ const CreateAnAppointment = async (
     });
     // company name date time,
     const today = new Date();
-    const transactionId = 'PH-HealthCare' + today;
+    const transactionId = 'PH-HealthCare' + today.toDateString();
     await tx.payment.create({
       data: {
         appointtmentId: appointmentData.id,
